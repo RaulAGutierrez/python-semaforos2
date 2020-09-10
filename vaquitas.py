@@ -8,6 +8,8 @@ largoPuente = 20
 
 cantVacas = 5
 
+
+
 class Vaca(threading.Thread):
   def __init__(self):
     super().__init__()
@@ -15,15 +17,28 @@ class Vaca(threading.Thread):
     self.velocidad = random.uniform(0.1, 0.9)
 
   def avanzar(self):
-    time.sleep(1-self.velocidad)
-    self.posicion += 1
-
+      
+      time.sleep(1-self.velocidad)
+      self.posicion += 1
+      
+    
   def dibujar(self):
-    print(' ' * self.posicion + '🐮') # si no funciona, cambiá por 'V' 
+      
+      print(' ' * self.posicion + '🐮'  ) # + str(self.posicion) # si no funciona, cambiá por 'V' 
 
   def run(self):
-    while(True):
-      self.avanzar()
+      
+      while(True):  
+            if self.posicion > (inicioPuente - 4 ) and self.posicion < (inicioPuente + largoPuente):
+                semaforoVaca.acquire()
+                self.avanzar()
+                semaforoVaca.release()
+            else: 
+                self.avanzar()
+                
+
+
+semaforoVaca = threading.Semaphore(1)   
 
 vacas = []
 for i in range(cantVacas):
@@ -38,7 +53,7 @@ def dibujarPuente():
   print(' ' * inicioPuente + '=' * largoPuente)
 
 while(True):
-  cls()
+  #cls()
   print('Apretá Ctrl + C varias veces para salir...')
   print()
   dibujarPuente()
